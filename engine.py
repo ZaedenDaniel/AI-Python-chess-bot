@@ -1,4 +1,3 @@
-from move import Move
 
 class state():
   def __init__(self):
