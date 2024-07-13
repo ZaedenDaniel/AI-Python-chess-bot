@@ -17,6 +17,8 @@ def main():
   clock  = p.time.Clock()
   screen.fill(p.Color('White'))
   gamestate = engine.state()
+  valid_move_list = gamestate.valid_moves() #list of valid moves
+  move_made = False #Flag variable to indicate when move was made
   load_images()
   running = True
   sq_selected = ()
@@ -26,6 +28,7 @@ def main():
       if event.type == p.QUIT:
         running = False
 
+      #selecting the piece
       elif event.type == p.MOUSEBUTTONDOWN:
         loc = p.mouse.get_pos()
         col = loc[0] // SQ_SIZE
@@ -40,19 +43,21 @@ def main():
         if len(player_clicked) == 2:
           move = engine.Move(player_clicked[0], player_clicked[1], gamestate.board)
           print(move.notation())
-          gamestate.make_move(move)
+          if move in valid_move_list:
+            gamestate.make_move(move)
+            move_made = True 
           sq_selected = ()
           player_clicked = []
 
+      # Undoing a move
       elif event.type == p.KEYDOWN:
         if event.key == p.K_u:
-          
-          #u key for undoing
           gamestate.undo()
+          move_made = True
 
-
-
-    
+    if move_made:
+      valid_move_list = gamestate.valid_moves()
+      move_made = False
     draw_state(screen, gamestate)
     clock.tick(MAX_FPS)
     p.display.flip()
